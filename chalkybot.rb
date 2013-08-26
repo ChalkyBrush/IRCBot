@@ -2,14 +2,18 @@
 #lookup github IRC gems
 
 require "socket"
-require ("./botclass")
+require 'io/wait'
 
 server = "chat.freenode.net"
 port = "6667"
-nick = "Chalky-Bot"
+nick = "Trivia-Bot"
+otherbot ="Chalky-Bot"
 channel = "#bitbreaker"
+private_string = "%6s@()"
 greeting_prefix = "privmsg #bitmaker :"
 greetings =["hello", "hi"]
+counter =0
+message_string = ""
 
 irc_server = TCPSocket.open(server, port)
 
@@ -17,8 +21,6 @@ irc_server.puts "USER bhellobot 0 * BHelloBot"
 irc_server.puts "NICK #{nick}"
 irc_server.puts "JOIN #{channel}"
 
-talkingbot=Bot.new
-thinkingbot=Bot.new
 
 def find_question(number)
 	File.open("questions.txt", "r").readlines.each_with_index { |s , index|
@@ -41,20 +43,26 @@ def find_answer(number)
 
 end
 
+
 until irc_server.eof do
+
 msg = irc_server.gets.downcase
+
+
 puts msg
+sleep(10)
+	message_string = ""
 	randomline=rand(4)
 	question=find_question(randomline)
 	answer = find_answer(randomline)
 
+	irc_server.puts "PRIVMSG #{channel} :#{question}"
+	irc_server.puts "PRIVMSG #{otherbot} :#{answer}^:#{private_string}"
 
-irc_server.puts "PRIVMSG #{channel} :#{question}"
-sleep(10)
-	if msg.include? greeting_prefix and answer
-	response = "nice answer"
-	irc_server.puts "PRIVMSG #{channel} :#{response}"
-	end 
+	# if msg.include? greeting_prefix and answer
+	# response = "nice answer"
+	# irc_server.puts "PRIVMSG #{channel} :#{response}"
+	# end 
 end
 # until irc_server.eof do
 # 	msg = irc_server.gets.downcase
