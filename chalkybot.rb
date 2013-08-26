@@ -34,9 +34,11 @@ end
 
 def find_answer(number)
 	File.open("questions.txt", "r").readlines.each_with_index { |s , index|
+  	puts s
   	if index == number
   		question_to_ask = s.to_s
-  		correct_answer = question_to_ask.split("}").last
+  		correct_answer = question_to_ask.split("}").last.chomp
+  		puts correct_answer
   		return correct_answer
   	end
 	}
@@ -52,12 +54,12 @@ msg = irc_server.gets.downcase
 puts msg
 sleep(10)
 	message_string = ""
-	randomline=rand(4)
+	randomline=rand(5)
 	question=find_question(randomline)
 	answer = find_answer(randomline)
 
 	irc_server.puts "PRIVMSG #{channel} :#{question}"
-	irc_server.puts "PRIVMSG #{otherbot} :#{answer}^:#{private_string}"
+	irc_server.puts "PRIVMSG #{otherbot} :{#{answer}}#{private_string}"
 
 	# if msg.include? greeting_prefix and answer
 	# response = "nice answer"

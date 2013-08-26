@@ -8,7 +8,10 @@ port = "6667"
 nick = "Chalky-Bot"
 otherbot = "Trivia-Bot"
 channel = "#bitbreaker"
+answer ="&*$@ruf!adfb"
 private_string = "%6s@()"
+answering_user =""
+winmessage =""
 greeting_prefix = "privmsg #bitmaker :"
 counter =0
 message_string = ""
@@ -26,9 +29,22 @@ until irc_server.eof do
 msg = irc_server.gets.downcase
 puts msg
 if msg.include? private_string
-	answer = private_string.split("^").first
+	puts answer
+	answer = msg.split("{").last
+	answer = answer.split("}").first
 	puts answer
 end
+puts "#{answer} before the if statement"
+if msg.include? answer and !msg.include? "trivia-bot"
+	puts "inside the if statement"
+	
+	answering_user = msg.split("!").first
+
+	win_message = "Congratulations #{answering_user}, you answered correctly!"
+	irc_server.puts "PRIVMSG #{channel} :#{winmessage}"
+
+end
+
 #if msg.include? 
 #puts msg
 
