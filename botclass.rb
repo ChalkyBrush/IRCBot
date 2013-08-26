@@ -6,12 +6,13 @@ require 'io/wait'
 server = "chat.freenode.net"
 port = "6667"
 nick = "Chalky-Bot"
-otherbot = "Trivia-Bot"
-channel = "#bitbreaker"
+otherbot = "Chalky-Bot"
+channel = "#bitmaker"
 answer ="&*$@ruf!adfb"
 private_string = "%6s@()"
 answering_user =""
 winmessage =""
+winnerdecided=false
 greeting_prefix = "privmsg #bitmaker :"
 counter =0
 message_string = ""
@@ -28,20 +29,24 @@ irc_server.puts "JOIN #{channel}"
 until irc_server.eof do
 msg = irc_server.gets.downcase
 puts msg
+
 if msg.include? private_string
+	winnerdecided=false
 	puts answer
 	answer = msg.split("{").last
 	answer = answer.split("}").first
 	puts answer
 end
 puts "#{answer} before the if statement"
-if msg.include? answer and !msg.include? "trivia-bot"
-	puts "inside the if statement"
-	
+if msg.include? answer and !msg.include? "trivia-bot" and winnerdecided==false
+	winnerdecided=true
 	answering_user = msg.split("!").first
-
+	answering_user = answering_user.split(":").last
+	puts answering_user
+		File.open("answering_user.txt", "w") do |x|
+		x.puts answering_user
+		end
 	win_message = "Congratulations #{answering_user}, you answered correctly!"
-	irc_server.puts "PRIVMSG #{channel} :#{winmessage}"
 
 end
 

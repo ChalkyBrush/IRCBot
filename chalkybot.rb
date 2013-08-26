@@ -8,12 +8,14 @@ server = "chat.freenode.net"
 port = "6667"
 nick = "Trivia-Bot"
 otherbot ="Chalky-Bot"
-channel = "#bitbreaker"
+channel = "#bitmaker"
 private_string = "%6s@()"
 greeting_prefix = "privmsg #bitmaker :"
+initiated = false
 greetings =["hello", "hi"]
 counter =0
 message_string = ""
+answering_user = ""
 
 irc_server = TCPSocket.open(server, port)
 
@@ -52,14 +54,34 @@ msg = irc_server.gets.downcase
 
 
 puts msg
-sleep(10)
+
 	message_string = ""
-	randomline=rand(5)
+	randomline=rand(59)
 	question=find_question(randomline)
 	answer = find_answer(randomline)
+	if initiated==true
+		irc_server.puts "PRIVMSG #{channel} :#{question}"
+		irc_server.puts "PRIVMSG #{otherbot} :{#{answer}}#{private_string}"
+	end
+	sleep(15)
+	if initiated==false
+	irc_server.puts "PRIVMSG #{channel} :Hello #{channel}, my name's Trivia-Bot. First person to answer my question wins nothing!"
+	initiated =true
+	end
+	answering_user = File.open("answering_user.txt", "r").read.chomp
+	if answering_user == ""
+		if initiated==true
+		irc_server.puts "PRIVMSG #{channel} :Nobody answered my question correctly! The correct answer is: #{answer}"
+		end
+	else
+		puts File.open("answering_user.txt", "r").read.chomp
+		
+		irc_server.puts "PRIVMSG #{channel} :#{answering_user} had the correct answer first with: #{answer}"
 
-	irc_server.puts "PRIVMSG #{channel} :#{question}"
-	irc_server.puts "PRIVMSG #{otherbot} :{#{answer}}#{private_string}"
+			File.open("answering_user.txt", "w") do |x|
+			x.puts ""
+			end
+	end
 
 	# if msg.include? greeting_prefix and answer
 	# response = "nice answer"
